@@ -71,10 +71,77 @@ Automatically act on your data and communicate using third-party services like T
 
 
 # PROGRAM:
+```
+#include"ThingSpeak.h"
+#include <WiFi.h>
+#include "DHT.h"
+
+char ssid[]="WIFIII";
+char pass[]="987654321";
+
+const int t=25;
+WiFiClient client;
+DHT dht(25, DHT11);
+
+unsigned long myChannelField = 2709725;
+const int ChannelField1 = 1 ; 
+const int ChannelField2 = 2 ;
+const char *myWriteAPIKey="UBMYF6M8VFLQ5MUS";
+
+void setup()
+{
+  Serial.begin(115200);
+  pinMode (t,OUTPUT);
+  WiFi.mode(WIFI_STA);
+  ThingSpeak.begin(client);
+  dht.begin();
+  delay(1000);
+}
+
+void loop()
+{
+  if(WiFi.status()!=WL_CONNECTED)
+  {
+    Serial.print("Attempting to connet to SSID: "); 
+    Serial.println(ssid);
+    while(WiFi.status() != WL_CONNECTED)
+    {
+      WiFi.begin(ssid, pass);
+      Serial.print(".");
+      delay(5000);
+    }
+    Serial.println("\nConnected");
+  }
+  float temperature = dht.readTemperature();
+  float humidity = dht.readHumidity();
+  delay(1000);
+  Serial.print("Temperature: ");
+  Serial.print(temperature);
+  Serial.println(" *C");
+  ThingSpeak.writeField(myChannelField, ChannelField1, temperature, myWriteAPIKey);
+  Serial.print("Humidity: ");
+  Serial.print(humidity);
+  Serial.println(" g.m-3");
+  ThingSpeak.writeField(myChannelField, ChannelField2, humidity, myWriteAPIKey);
+  delay(1000);
+}
+
+
+```
 
 # CIRCUIT DIAGRAM:
 
+![Screenshot 2024-12-30 205211](https://github.com/user-attachments/assets/6c3256b7-6eaf-4436-811e-bce0e21e06c3)
+
+
 # OUTPUT:
+
+### THINGSPEAK
+![Screenshot 2024-12-30 205123](https://github.com/user-attachments/assets/f9a90e3a-4f46-4108-acaf-559887a20043)
+
+### SERIAL MONITOR
+![Screenshot 2024-12-30 205041](https://github.com/user-attachments/assets/bb94216f-beeb-4abd-b1e1-23e111faf9f6)
+
 
 # RESULT:
 
